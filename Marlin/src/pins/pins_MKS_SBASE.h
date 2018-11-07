@@ -143,7 +143,7 @@
 //
 // Misc. Functions
 //
-#define PS_ON_PIN          P0_25   // TH3 Connector
+#define PS_ON_PIN          P0_17
 
 //
 // Ethernet pins
@@ -176,9 +176,9 @@
  * - The onboard SD card can be used and optionally shared with a PC via USB.
  */
 
-//#define LPC_SD_CUSTOM_CABLE // Use a custom cable to access the SD
+#define LPC_SD_CUSTOM_CABLE // Use a custom cable to access the SD
 //#define LPC_SD_LCD          // Marlin uses the SD drive attached to the LCD
-#define LPC_SD_ONBOARD        // Marlin uses the SD drive attached to the control board
+//#define LPC_SD_ONBOARD        // Marlin uses the SD drive attached to the control board
 
 #if ENABLED(LPC_SD_CUSTOM_CABLE)
 

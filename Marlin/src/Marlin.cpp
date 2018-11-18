@@ -371,7 +371,7 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
       #if HAS_LCD_MENU && ENABLED(AUTO_BED_LEVELING_UBL)
         if (ubl.lcd_map_control) {
           ubl.lcd_map_control = false;
-          set_defer_return_to_status(false);
+          ui.defer_status_screen(false);
         }
       #endif
     }
@@ -549,7 +549,7 @@ void idle(
     max7219.idle_tasks();
   #endif
 
-  lcd_update();
+  ui.update();
 
   #if ENABLED(HOST_KEEPALIVE_FEATURE)
     gcode.host_keepalive();
@@ -609,8 +609,8 @@ void kill(PGM_P const lcd_msg/*=NULL*/) {
   SERIAL_ERROR_START();
   SERIAL_ERRORLNPGM(MSG_ERR_KILLED);
 
-  #if ENABLED(ULTRA_LCD) || ENABLED(EXTENSIBLE_UI)
-    kill_screen(lcd_msg ? lcd_msg : PSTR(MSG_KILLED));
+  #if HAS_SPI_LCD || ENABLED(EXTENSIBLE_UI)
+    ui.kill_screen(lcd_msg ? lcd_msg : PSTR(MSG_KILLED));
   #else
     UNUSED(lcd_msg);
   #endif
@@ -899,11 +899,11 @@ void setup() {
     fanmux_init();
   #endif
 
-  lcd_init();
-  lcd_reset_status();
+  ui.init();
+  ui.reset_status();
 
   #if ENABLED(SHOW_BOOTSCREEN)
-    lcd_bootscreen();
+    ui.show_bootscreen();
   #endif
 
   #if ENABLED(MIXING_EXTRUDER)
@@ -924,11 +924,11 @@ void setup() {
   #endif
 
   #if DO_SWITCH_EXTRUDER
-    move_extruder_servo(0);  // Initialize extruder servo
+    move_extruder_servo(0);   // Initialize extruder servo
   #endif
 
   #if ENABLED(SWITCHING_NOZZLE)
-    move_nozzle_servo(0);  // Initialize nozzle servo
+    move_nozzle_servo(0);     // Initialize nozzle servo
   #endif
 
   #if ENABLED(PARKING_EXTRUDER)
@@ -936,11 +936,11 @@ void setup() {
   #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
-    check_print_job_recovery();
+    recovery.check();
   #endif
 
-  #if ENABLED(USE_WATCHDOG) // Reinit watchdog after HAL_get_reset_source call
-    watchdog_init();
+  #if ENABLED(USE_WATCHDOG)
+    watchdog_init();          // Reinit watchdog after HAL_get_reset_source call
   #endif
 
   #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
@@ -967,7 +967,7 @@ void loop() {
     #if ENABLED(SDSUPPORT)
       card.checkautostart();
 
-      if (card.abort_sd_printing) {
+      if (card.flag.abort_sd_printing) {
         card.stopSDPrint(
           #if SD_RESORT
             true

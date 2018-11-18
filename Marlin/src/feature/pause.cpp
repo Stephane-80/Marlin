@@ -399,14 +399,19 @@ bool pause_print(const float &retract, const point_t &park_point, const float &u
 }
 
 /**
+ * For Paused Print:
+ * - Show "Press button (or M108) to resume"
+ *
+ * For Filament Change:
  * - Show "Insert filament and press button to continue"
+ *
  * - Wait for a click before returning
- * - Heaters can time out, reheated before accepting a click
+ * - Heaters can time out and must reheat before continuing
  *
  * Used by M125 and M600
  */
 
-#if HAS_LCD_MENU && ENABLED(EMERGENCY_PARSER)
+#if (HAS_LCD_MENU || ENABLED(EXTENSIBLE_UI)) && ENABLED(EMERGENCY_PARSER)
   #define _PMSG(L) L
 #elif ENABLED(EMERGENCY_PARSER)
   #define _PMSG(L) L##_M108
@@ -586,7 +591,7 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
   #endif
 
   #if ENABLED(ULTRA_LCD)
-    lcd_reset_status();
+    ui.reset_status();
   #endif
 }
 

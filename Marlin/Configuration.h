@@ -645,7 +645,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 830, 192 } //{ 80, 80, 400, 415 } //stock-> { 160.38, 160.24, 800, 192 } <-32 16 stock E->{ 80.19, 80.12, 400, 96 } Bondtech->{ 80.19, 80.12, 400, 415 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 830, 830 } //{ 80, 80, 400, 415 } //stock-> { 160.38, 160.24, 800, 192 } <-32 16 stock E->{ 80.19, 80.12, 400, 96 } Bondtech->{ 80.19, 80.12, 400, 415 }
 
 /**
  * Default Max Feed Rate (mm/s)

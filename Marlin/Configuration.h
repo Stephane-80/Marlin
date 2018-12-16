@@ -652,7 +652,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 25, 30, 30 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 25, 50, 50 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -685,7 +685,7 @@
 #define DEFAULT_XJERK                 10.0
 #define DEFAULT_YJERK                 10.0
 #define DEFAULT_ZJERK                  0.4
-#define DEFAULT_EJERK                  5.0
+#define DEFAULT_EJERK                 10.0
 
 /**
  * S-Curve Acceleration
@@ -808,7 +808,7 @@
  */
 #define X_PROBE_OFFSET_FROM_EXTRUDER -41  // X offset: -left  +right  [of the nozzle]
 #define Y_PROBE_OFFSET_FROM_EXTRUDER -10  // Y offset: -front +behind [the nozzle]
-#define Z_PROBE_OFFSET_FROM_EXTRUDER -1.83   // Z offset: -below +above  [the nozzle]
+#define Z_PROBE_OFFSET_FROM_EXTRUDER -2.0   // Z offset: -below +above  [the nozzle]
 
 // Certain types of probes need to stay away from edges
 #define MIN_PROBE_EDGE 20

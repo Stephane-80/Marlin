@@ -164,17 +164,6 @@ bool Running = true;
   TempUnit input_temp_units = TEMPUNIT_C;
 #endif
 
-#if FAN_COUNT > 0
-  uint8_t fan_speed[FAN_COUNT] = { 0 };
-  #if ENABLED(EXTRA_FAN_SPEED)
-    uint8_t old_fan_speed[FAN_COUNT], new_fan_speed[FAN_COUNT];
-  #endif
-  #if ENABLED(PROBING_FANS_OFF)
-    bool fans_paused; // = false;
-    uint8_t paused_fan_speed[FAN_COUNT] = { 0 };
-  #endif
-#endif
-
 // For M109 and M190, this flag may be cleared (by M108) to exit the wait loop
 volatile bool wait_for_heatup = true;
 
@@ -655,7 +644,7 @@ void stop() {
   print_job_timer.stop();
 
   #if ENABLED(PROBING_FANS_OFF)
-    if (fans_paused) fans_pause(false); // put things back the way they were
+    if (thermalManager.fans_paused) thermalManager.set_fans_paused(false); // put things back the way they were
   #endif
 
   if (IsRunning()) {
@@ -820,10 +809,6 @@ void setup() {
     OUT_WRITE(PHOTOGRAPH_PIN, LOW);
   #endif
 
-  #if HAS_CASE_LIGHT
-    update_case_light();
-  #endif
-
   #if ENABLED(SPINDLE_LASER_ENABLE)
     OUT_WRITE(SPINDLE_LASER_ENABLE_PIN, !SPINDLE_LASER_ENABLE_INVERT);  // init spindle to off
     #if SPINDLE_DIR_CHANGE
@@ -875,13 +860,11 @@ void setup() {
     leds.setup();
   #endif
 
-  #if ENABLED(RGB_LED) || ENABLED(RGBW_LED)
-    SET_OUTPUT(RGB_LED_R_PIN);
-    SET_OUTPUT(RGB_LED_G_PIN);
-    SET_OUTPUT(RGB_LED_B_PIN);
-    #if ENABLED(RGBW_LED)
-      SET_OUTPUT(RGB_LED_W_PIN);
+  #if HAS_CASE_LIGHT
+    #if DISABLED(CASE_LIGHT_USE_NEOPIXEL)
+      SET_OUTPUT(CASE_LIGHT_PIN);
     #endif
+    update_case_light();
   #endif
 
   #if ENABLED(MK2_MULTIPLEXER)
@@ -976,7 +959,7 @@ void loop() {
         quickstop_stepper();
         print_job_timer.stop();
         thermalManager.disable_all_heaters();
-        zero_fan_speeds();
+        thermalManager.zero_fan_speeds();
         wait_for_heatup = false;
         #if ENABLED(POWER_LOSS_RECOVERY)
           card.removeJobRecoveryFile();

@@ -653,7 +653,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 25, 50, 50 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
+#define DEFAULT_MAX_FEEDRATE          { 2500, 2500, 100, 30, 30 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -661,7 +661,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 100, 5000, 5000 } //{ 300, 300, 20, 40 }
+#define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 5000, 5000 } //{ 300, 300, 20, 40 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -671,9 +671,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          575 //500    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   1000 //500    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION           600 //575    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1000 // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION    800 //1000    // X, Y, Z acceleration for travel (non printing) moves
 
 //
 // Use Junction Deviation instead of traditional Jerk Limiting
@@ -1338,7 +1338,7 @@
 // Preheat Constants
 #define PREHEAT_1_LABEL       "PLA"
 #define PREHEAT_1_TEMP_HOTEND 195
-#define PREHEAT_1_TEMP_BED     65
+#define PREHEAT_1_TEMP_BED     60
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "PETG"
@@ -1595,7 +1595,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-//#define SPEAKER
+#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.

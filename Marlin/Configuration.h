@@ -653,7 +653,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 2500, 2500, 100, 30, 30 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
+#define DEFAULT_MAX_FEEDRATE          { 600, 600, 25, 40, 40 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -661,7 +661,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 5000, 5000 } //{ 300, 300, 20, 40 }
+#define DEFAULT_MAX_ACCELERATION      { 800, 800, 50, 1500, 1500 } //{ 300, 300, 20, 40 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -673,7 +673,7 @@
  */
 #define DEFAULT_ACCELERATION           600 //575    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  1000 // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION    800 //1000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_TRAVEL_ACCELERATION   1000 //1000    // X, Y, Z acceleration for travel (non printing) moves
 
 //
 // Use Junction Deviation instead of traditional Jerk Limiting

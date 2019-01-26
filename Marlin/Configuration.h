@@ -653,7 +653,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 600, 600, 25, 40, 40 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
+#define DEFAULT_MAX_FEEDRATE          { 600, 600, 25, 50, 50 } //{ 300, 300, 25, 30 } //{ 500, 500, 15, 30 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -661,7 +661,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 800, 800, 50, 1500, 1500 } //{ 300, 300, 20, 40 }
+#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 100, 5000, 5000 } //{ 300, 300, 20, 40 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -692,8 +692,8 @@
  * value set here, it may happen instantaneously.
  */
 #if DISABLED(JUNCTION_DEVIATION)
-  #define DEFAULT_XJERK 10.0
-  #define DEFAULT_YJERK 10.0
+  #define DEFAULT_XJERK 8.0
+  #define DEFAULT_YJERK 8.0
   #define DEFAULT_ZJERK  0.4
 #endif
 
@@ -826,7 +826,7 @@
 #define MIN_PROBE_EDGE 20
 
 // X and Y axis travel speed (mm/m) between probes
-#define XY_PROBE_SPEED (180*60)
+#define XY_PROBE_SPEED (400*60)
 
 // Feedrate (mm/m) for the first approach when double-probing (MULTIPLE_PROBING == 2)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
@@ -978,7 +978,7 @@
 #endif
 
 #if ENABLED(MIN_SOFTWARE_ENDSTOPS) || ENABLED(MAX_SOFTWARE_ENDSTOPS)
-  //#define SOFT_ENDSTOPS_MENU_ITEM  // Enable/Disable software endstops from the LCD
+  #define SOFT_ENDSTOPS_MENU_ITEM  // Enable/Disable software endstops from the LCD
 #endif
 
 /**

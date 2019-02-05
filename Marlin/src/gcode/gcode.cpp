@@ -130,7 +130,7 @@ void GcodeSuite::dwell(millis_t time) {
     while (G29()) { // G29 should return true for failed probes ONLY
       if (retries--) {
         #ifdef G29_ACTION_ON_RECOVER
-          SERIAL_ECHOLNPGM("//action:" G29_ACTION_ON_RECOVER);
+          host_action(PSTR(G29_ACTION_ON_RECOVER));
         #endif
         #ifdef G29_RECOVER_COMMANDS
           process_subcommands_now_P(PSTR(G29_RECOVER_COMMANDS));
@@ -141,7 +141,7 @@ void GcodeSuite::dwell(millis_t time) {
           process_subcommands_now_P(PSTR(G29_FAILURE_COMMANDS));
         #endif
         #ifdef G29_ACTION_ON_FAILURE
-          SERIAL_ECHOLNPGM("//action:" G29_ACTION_ON_FAILURE);
+          host_action(PSTR(G29_ACTION_ON_FAILURE));
         #endif
         #if ENABLED(G29_HALT_ON_FAILURE)
           kill(PSTR(MSG_ERR_PROBING_FAILED));
@@ -557,6 +557,10 @@ void GcodeSuite::process_parsed_command(
         case 402: M402(); break;                                  // M402: Stow probe
       #endif
 
+      #if ENABLED(PRUSA_MMU2)
+        case 403: M403(); break;
+      #endif
+
       #if ENABLED(FILAMENT_WIDTH_SENSOR)
         case 404: M404(); break;                                  // M404: Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or display nominal filament width
         case 405: M405(); break;                                  // M405: Turn on filament sensor for control
@@ -665,6 +669,14 @@ void GcodeSuite::process_parsed_command(
         #if USE_SENSORLESS
           case 914: M914(); break;                                // M914: Set StallGuard sensitivity.
         #endif
+      #endif
+
+      #if HAS_DRIVER(L6470)
+        case 122: M122(); break;                                   // M122: Report status
+        case 906: M906(); break;                                   // M906: Set or get motor drive level
+        case 916: M916(); break;                                   // M916: L6470 tuning: Increase drive level until thermal warning
+        case 917: M917(); break;                                   // M917: L6470 tuning: Find minimum current thresholds
+        case 918: M918(); break;                                   // M918: L6470 tuning: Increase speed until max or error
       #endif
 
       #if HAS_MICROSTEPS

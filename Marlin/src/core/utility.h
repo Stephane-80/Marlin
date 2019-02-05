@@ -119,3 +119,18 @@ inline void serial_delay(const millis_t ms) {
 #if ENABLED(DEBUG_LEVELING_FEATURE)
   void log_machine_info();
 #endif
+
+void print_bin(const uint16_t val);
+
+template<typename T>
+class restorer {
+  T& ref_;
+  T  val_;
+public:
+  restorer(T& perm) : ref_(perm), val_(perm) {}
+  ~restorer() { restore(); }
+  inline void restore() { ref_ = val_; }
+};
+
+#define REMEMBER(X) restorer<typeof(X)> X##_restorer(X)
+#define RESTORE(X) X##_restorer.restore()

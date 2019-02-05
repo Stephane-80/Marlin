@@ -38,11 +38,11 @@
 #include "../module/temperature.h"
 
 #if ENABLED(FWRETRACT)
-  #include "../feature/fwretract.h"
+  #include "fwretract.h"
 #endif
 
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
-  #include "../feature/runout.h"
+  #include "runout.h"
 #endif
 
 #include "../lcd/ultralcd.h"
@@ -93,7 +93,7 @@ static bool ensure_safe_temperature(const AdvancedPauseMode mode=ADVANCED_PAUSE_
 
   #if ENABLED(PREVENT_COLD_EXTRUSION)
     if (!DEBUGGING(DRYRUN) && thermalManager.targetTooColdToExtrude(active_extruder)) {
-      SERIAL_ERROR_MSG(MSG_ERR_HOTEND_TOO_COLD);
+      SERIAL_ECHO_MSG(MSG_ERR_HOTEND_TOO_COLD);
       return false;
     }
   #endif
@@ -232,11 +232,9 @@ bool load_filament(const float &slow_load_length/*=0*/, const float &fast_load_l
       #endif
 
       // Keep looping if "Purge More" was selected
-    } while (
+    } while (false
       #if HAS_LCD_MENU
-        show_lcd && advanced_pause_menu_response == ADVANCED_PAUSE_RESPONSE_EXTRUDE_MORE
-      #else
-        0
+        && show_lcd && advanced_pause_menu_response == ADVANCED_PAUSE_RESPONSE_EXTRUDE_MORE
       #endif
     );
 
@@ -294,7 +292,7 @@ bool unload_filament(const float &unload_length, const bool show_lcd/*=false*/,
   #endif
 
   // Disable extruders steppers for manual filament changing (only on boards that have separate ENABLE_PINS)
-  #if (E0_ENABLE_PIN != X_ENABLE_PIN && E1_ENABLE_PIN != Y_ENABLE_PIN) || AXIS_DRIVER_TYPE(E0, TMC2660) || AXIS_DRIVER_TYPE(E1, TMC2660) || AXIS_DRIVER_TYPE(E2, TMC2660) || AXIS_DRIVER_TYPE(E3, TMC2660) || AXIS_DRIVER_TYPE(E4, TMC2660) || AXIS_DRIVER_TYPE(E5, TMC2660)
+  #if (E0_ENABLE_PIN != X_ENABLE_PIN && E1_ENABLE_PIN != Y_ENABLE_PIN) || AXIS_DRIVER_TYPE_E0(TMC2660) || AXIS_DRIVER_TYPE_E1(TMC2660) || AXIS_DRIVER_TYPE_E2(TMC2660) || AXIS_DRIVER_TYPE_E3(TMC2660) || AXIS_DRIVER_TYPE_E4(TMC2660) || AXIS_DRIVER_TYPE_E5(TMC2660)
     disable_e_stepper(active_extruder);
     safe_delay(100);
   #endif
@@ -323,24 +321,22 @@ bool pause_print(const float &retract, const point_t &park_point, const float &u
 
   if (did_pause_print) return false; // already paused
 
-  #ifdef ACTION_ON_PAUSE
-    SERIAL_ECHOLNPGM("//action:" ACTION_ON_PAUSE);
-  #endif
-
-  #if HAS_LCD_MENU
-    if (show_lcd) lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_INIT, ADVANCED_PAUSE_MODE_PAUSE_PRINT);
-  #else
-    UNUSED(show_lcd);
+  #ifdef ACTION_ON_PAUSED
+    host_action_paused();
+  #elif defined(ACTION_ON_PAUSE)
+    host_action_pause();
   #endif
 
   if (!DEBUGGING(DRYRUN) && unload_length && thermalManager.targetTooColdToExtrude(active_extruder)) {
-    SERIAL_ERROR_MSG(MSG_ERR_HOTEND_TOO_COLD);
+    SERIAL_ECHO_MSG(MSG_ERR_HOTEND_TOO_COLD);
 
     #if HAS_LCD_MENU
       if (show_lcd) { // Show status screen
         lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_STATUS);
         LCD_MESSAGEPGM(MSG_M600_TOO_COLD);
       }
+    #else
+      UNUSED(show_lcd);
     #endif
 
     return false; // unable to reach safe temperature
@@ -519,11 +515,11 @@ void wait_for_confirmation(const bool is_reload/*=false*/, const int8_t max_beep
  */
 void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_length/*=0*/, const float &purge_length/*=ADVANCED_PAUSE_PURGE_LENGTH*/, const int8_t max_beep_count/*=0*/ DXC_ARGS) {
   /*
-  SERIAL_ECHOPGM("start of resume_print()\n");
+  SERIAL_ECHOLNPGM("start of resume_print()");
   SERIAL_ECHOPAIR("\ndual_x_carriage_mode:", dual_x_carriage_mode);
   SERIAL_ECHOPAIR("\nextruder_duplication_enabled:", extruder_duplication_enabled);
   SERIAL_ECHOPAIR("\nactive_extruder:", active_extruder);
-  SERIAL_ECHOPGM("\n\n");
+  SERIAL_ECHOLNPGM("\n");
   //*/
 
   if (!did_pause_print) return;
@@ -570,8 +566,10 @@ void resume_print(const float &slow_load_length/*=0*/, const float &fast_load_le
     lcd_advanced_pause_show_message(ADVANCED_PAUSE_MESSAGE_STATUS);
   #endif
 
-  #ifdef ACTION_ON_RESUME
-    SERIAL_ECHOLNPGM("//action:" ACTION_ON_RESUME);
+  #ifdef ACTION_ON_RESUMED
+    host_action_resumed();
+  #elif defined(ACTION_ON_RESUME)
+    host_action_resume();
   #endif
 
   --did_pause_print;

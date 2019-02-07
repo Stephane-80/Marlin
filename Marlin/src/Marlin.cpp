@@ -44,6 +44,8 @@
 
 #include "HAL/shared/Delay.h"
 
+#include "module/stepper_indirection.h"
+
 #ifdef ARDUINO
   #include <pins_arduino.h>
 #endif
@@ -146,7 +148,7 @@
   #include "feature/fanmux.h"
 #endif
 
-#if DO_SWITCH_EXTRUDER || ENABLED(SWITCHING_NOZZLE) || ENABLED(PARKING_EXTRUDER)
+#if DO_SWITCH_EXTRUDER || ENABLED(SWITCHING_NOZZLE) || ENABLED(PARKING_EXTRUDER) || ENABLED(MAGNETIC_PARKING_EXTRUDER)
   #include "module/tool_change.h"
 #endif
 
@@ -154,8 +156,16 @@
   #include "feature/controllerfan.h"
 #endif
 
+#if ENABLED(PRUSA_MMU2)
+  #include "feature/prusa_MMU2/mmu2.h"
+#endif
+
 #if ENABLED(EXTENSIBLE_UI)
   #include "lcd/extensible_ui/ui_api.h"
+#endif
+
+#if HAS_DRIVER(L6470)
+  #include "libs/L6470/L6470_Marlin.h"
 #endif
 
 bool Running = true;
@@ -305,6 +315,38 @@ void disable_all_steppers() {
   disable_e_steppers();
 }
 
+#if HAS_ACTION_COMMANDS
+
+  void host_action(const char * const pstr, const bool eol=true) {
+    SERIAL_ECHOPGM("//action:");
+    serialprintPGM(pstr);
+    if (eol) SERIAL_EOL();
+  }
+
+  #ifdef ACTION_ON_KILL
+    void host_action_kill() { host_action(PSTR(ACTION_ON_KILL)); }
+  #endif
+  #ifdef ACTION_ON_PAUSE
+    void host_action_pause() { host_action(PSTR(ACTION_ON_PAUSE)); }
+  #endif
+  #ifdef ACTION_ON_PAUSED
+    void host_action_paused() { host_action(PSTR(ACTION_ON_PAUSED)); }
+  #endif
+  #ifdef ACTION_ON_RESUME
+    void host_action_resume() { host_action(PSTR(ACTION_ON_RESUME)); }
+  #endif
+  #ifdef ACTION_ON_RESUMED
+    void host_action_resumed() { host_action(PSTR(ACTION_ON_RESUMED)); }
+  #endif
+  #ifdef ACTION_ON_CANCEL
+    void host_action_cancel() { host_action(PSTR(ACTION_ON_CANCEL)); }
+  #endif
+  #ifdef ACTION_ON_FILAMENT_RUNOUT
+    void host_action_filament_runout(const bool eol/*=true*/) { host_action(PSTR(ACTION_ON_FILAMENT_RUNOUT), eol); }
+  #endif
+
+#endif // HAS_ACTION_COMMANDS
+
 /**
  * Manage several activities:
  *  - Check for Filament Runout
@@ -341,28 +383,34 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
   #endif
 
   if (stepper_inactive_time) {
+    static bool already_shutdown_steppers; // = false
     if (planner.has_blocks_queued())
       gcode.previous_move_ms = ms; // reset_stepper_timeout to keep steppers powered
     else if (MOVE_AWAY_TEST && !ignore_stepper_queue && ELAPSED(ms, gcode.previous_move_ms + stepper_inactive_time)) {
-      #if ENABLED(DISABLE_INACTIVE_X)
-        disable_X();
-      #endif
-      #if ENABLED(DISABLE_INACTIVE_Y)
-        disable_Y();
-      #endif
-      #if ENABLED(DISABLE_INACTIVE_Z)
-        disable_Z();
-      #endif
-      #if ENABLED(DISABLE_INACTIVE_E)
-        disable_e_steppers();
-      #endif
-      #if HAS_LCD_MENU && ENABLED(AUTO_BED_LEVELING_UBL)
-        if (ubl.lcd_map_control) {
-          ubl.lcd_map_control = false;
-          ui.defer_status_screen(false);
-        }
-      #endif
+      if (!already_shutdown_steppers) {
+        already_shutdown_steppers = true;  // L6470 SPI will consume 99% of free time without this
+        #if ENABLED(DISABLE_INACTIVE_X)
+          disable_X();
+        #endif
+        #if ENABLED(DISABLE_INACTIVE_Y)
+          disable_Y();
+        #endif
+        #if ENABLED(DISABLE_INACTIVE_Z)
+          disable_Z();
+        #endif
+        #if ENABLED(DISABLE_INACTIVE_E)
+          disable_e_steppers();
+        #endif
+        #if HAS_LCD_MENU && ENABLED(AUTO_BED_LEVELING_UBL)
+          if (ubl.lcd_map_control) {
+            ubl.lcd_map_control = false;
+            ui.defer_status_screen(false);
+          }
+        #endif
+      }
     }
+    else
+      already_shutdown_steppers = false;
   }
 
   #if PIN_EXISTS(CHDK) // Check if pin should be set to LOW (after M240 set it HIGH)
@@ -516,6 +564,10 @@ void manage_inactivity(const bool ignore_stepper_queue/*=false*/) {
     monitor_tmc_driver();
   #endif
 
+  #if ENABLED(MONITOR_L6470_DRIVER_STATUS)
+    L6470.monitor_driver();
+  #endif
+
   // Limit check_axes_activity frequency to 10Hz
   static millis_t next_check_axes_ms = 0;
   if (ELAPSED(ms, next_check_axes_ms)) {
@@ -584,6 +636,10 @@ void idle(
   #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
     Sd2Card::idle();
   #endif
+
+  #if ENABLED(PRUSA_MMU2)
+    mmu2.mmuLoop();
+  #endif
 }
 
 /**
@@ -602,7 +658,7 @@ void kill(PGM_P const lcd_msg/*=NULL*/) {
   #endif
 
   #ifdef ACTION_ON_KILL
-    SERIAL_ECHOLNPGM("//action:" ACTION_ON_KILL);
+    host_action_kill();
   #endif
 
   minkill();
@@ -678,6 +734,10 @@ void setup() {
 
   #ifdef HAL_INIT
     HAL_init();
+  #endif
+
+  #if HAS_DRIVER(L6470)
+    L6470.init();         // setup SPI and then init chips
   #endif
 
   #if ENABLED(MAX7219_DEBUG)
@@ -906,11 +966,21 @@ void setup() {
   #endif
 
   #if ENABLED(SWITCHING_NOZZLE)
-    move_nozzle_servo(0);     // Initialize nozzle servo
+    // Initialize nozzle servo(s)
+    #if SWITCHING_NOZZLE_TWO_SERVOS
+      lower_nozzle(0);
+      raise_nozzle(1);
+    #else
+      move_nozzle_servo(0);
+    #endif
+  #endif
+
+  #if ENABLED(MAGNETIC_PARKING_EXTRUDER)
+    mpe_settings_init();
   #endif
 
   #if ENABLED(PARKING_EXTRUDER)
-    pe_magnet_init();
+    pe_solenoid_init();
   #endif
 
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -931,6 +1001,10 @@ void setup() {
 
   #if HAS_TRINAMIC && DISABLED(PS_DEFAULT_OFF)
     test_tmc_connection(true, true, true, true);
+  #endif
+
+  #if ENABLED(PRUSA_MMU2)
+    mmu2.init();
   #endif
 }
 

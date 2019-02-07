@@ -741,7 +741,7 @@ void MarlinUI::draw_status_message(const bool blink) {
  *         |F---%  SD---% T--:--|
  *         |01234567890123456789|
  *
- *  LCD_INFO_SCREEN_STYLE 1 : Prusa-style Status Screen
+ *  LCD_INFO_SCREEN_STYLE 1 : Průša-style Status Screen
  *
  *  |T000/000°  Z 000.00 |
  *  |B000/000°  F---%    |
@@ -981,7 +981,7 @@ void MarlinUI::draw_status_screen() {
     void MarlinUI::draw_hotend_status(const uint8_t row, const uint8_t extruder) {
       if (row < LCD_HEIGHT) {
         lcd_moveto(LCD_WIDTH - 9, row);
-        _draw_heater_status(extruder, LCD_STR_THERMOMETER[0], ui.get_blink());
+        _draw_heater_status(extruder, LCD_STR_THERMOMETER[0], get_blink());
       }
     }
 

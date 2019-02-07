@@ -191,6 +191,7 @@
  * M400 - Finish all moves.
  * M401 - Deploy and activate Z probe. (Requires a probe)
  * M402 - Deactivate and stow Z probe. (Requires a probe)
+ * M403 - Set filament type for PRUSA MMU2
  * M404 - Display or set the Nominal Filament Width: "W<diameter>". (Requires FILAMENT_WIDTH_SENSOR)
  * M405 - Enable Filament Sensor flow control. "M405 D<delay_cm>". (Requires FILAMENT_WIDTH_SENSOR)
  * M406 - Disable Filament Sensor flow control. (Requires FILAMENT_WIDTH_SENSOR)
@@ -240,6 +241,9 @@
  * M912 - Clear stepper driver overtemperature pre-warn condition flag. (Requires at least one _DRIVER_TYPE defined as TMC2130/TMC2208/TMC2660)
  * M913 - Set HYBRID_THRESHOLD speed. (Requires HYBRID_THRESHOLD)
  * M914 - Set StallGuard sensitivity. (Requires SENSORLESS_HOMING or SENSORLESS_PROBING)
+ * M917 - L6470 tuning: Find minimum current thresholds
+ * M918 - L6470 tuning: Increase speed until max or error
+ * M951 - Set Magnetic Parking Extruder parameters. (Requires MAGNETIC_PARKING_EXTRUDER)
  *
  * M360 - SCARA calibration: Move to cal-position ThetaA (0 deg calibration)
  * M361 - SCARA calibration: Move to cal-position ThetaB (90 deg calibration - steps per degree)
@@ -431,6 +435,10 @@ private:
   #endif
 
   static void G92();
+
+  #if ENABLED(CALIBRATION_GCODE)
+    static void G425();
+  #endif
 
   #if HAS_RESUME_CONTINUE
     static void M0_M1();
@@ -697,6 +705,10 @@ private:
     static void M402();
   #endif
 
+  #if ENABLED(PRUSA_MMU2)
+    static void M403();
+  #endif
+
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
     static void M404();
     static void M405();
@@ -752,7 +764,7 @@ private:
     static void M665();
   #endif
 
-  #if ENABLED(DELTA) || ENABLED(X_DUAL_ENDSTOPS) || ENABLED(Y_DUAL_ENDSTOPS) || Z_MULTI_ENDSTOPS
+  #if ENABLED(DELTA) || HAS_EXTRA_ENDSTOPS
     static void M666();
   #endif
 
@@ -812,6 +824,14 @@ private:
     #endif
   #endif
 
+  #if HAS_DRIVER(L6470)
+    static void M122();
+    static void M906();
+    static void M916();
+    static void M917();
+    static void M918();
+  #endif
+
   #if HAS_DIGIPOTSS || HAS_MOTOR_CURRENT_PWM || ENABLED(DIGIPOT_I2C) || ENABLED(DAC_STEPPER_CURRENT)
     static void M907();
     #if HAS_DIGIPOTSS || ENABLED(DAC_STEPPER_CURRENT)
@@ -825,6 +845,10 @@ private:
 
   #if ENABLED(SDSUPPORT)
     static void M928();
+  #endif
+
+  #if ENABLED(MAGNETIC_PARKING_EXTRUDER)
+    static void M951();
   #endif
 
   static void M999();

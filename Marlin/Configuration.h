@@ -442,10 +442,10 @@
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
-  // Creality CR10S chimera aqua pour 220C // Creality CR10S stock pour 210C
-  #define  DEFAULT_Kp 14.57 //#define  DEFAULT_Kp 28.13
-  #define  DEFAULT_Ki 0.82 //#define  DEFAULT_Ki 2.37
-  #define  DEFAULT_Kd 64.68 //#define  DEFAULT_Kd 83.55
+  // Creality CR10S chimera 210C
+  #define  DEFAULT_Kp 19.50
+  #define  DEFAULT_Ki 1.13
+  #define  DEFAULT_Kd 84.32
 
   // MakerGear
   //#define DEFAULT_Kp 7.0
@@ -505,9 +505,9 @@
   //#define DEFAULT_bedKd 1675.16
 
   //hotbed cr-10s pour 65C
-  #define DEFAULT_bedKp 492.59
-  #define DEFAULT_bedKi 92.51
-  #define DEFAULT_bedKd 655.70
+  #define DEFAULT_bedKp 558.89
+  #define DEFAULT_bedKi 47.16
+  #define DEFAULT_bedKd 1656.00
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -697,7 +697,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 30, 55, 55 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 30, 50, 50 }
 
 /**
  * Default Max Acceleration (change/s) change = mm/s
@@ -705,7 +705,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4[, E5]]]]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 120, 10000, 10000 }
+#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 120, 2000, 2000 }
 
 /**
  * Default Acceleration (change/s) change = mm/s
@@ -715,9 +715,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          1000 // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  10000  // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   3000 // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION           600 // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1500  // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   1000 // X, Y, Z acceleration for travel (non printing) moves
 
 //
 // Use Junction Deviation instead of traditional Jerk Limiting
@@ -1153,7 +1153,7 @@
 #if ENABLED(AUTO_BED_LEVELING_LINEAR) || ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 3
+  #define GRID_MAX_POINTS_X 4
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Set the boundaries for probing (where the probe can reach).
@@ -1285,7 +1285,7 @@
 
 // Homing speeds (mm/m)
 #define HOMING_FEEDRATE_XY (50*60)
-#define HOMING_FEEDRATE_Z  (8*60)
+#define HOMING_FEEDRATE_Z  (10*60)
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS

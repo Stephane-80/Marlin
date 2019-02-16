@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2016 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
@@ -582,7 +582,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
 /**
  * Filament Runout needs one or more pins and either SD Support or Auto print start detection
  */
-#if ENABLED(FILAMENT_RUNOUT_SENSOR)
+#if HAS_FILAMENT_SENSOR
   #if !PIN_EXISTS(FIL_RUNOUT)
     #error "FILAMENT_RUNOUT_SENSOR requires FIL_RUNOUT_PIN."
   #elif NUM_RUNOUT_SENSORS > E_STEPPERS
@@ -2074,6 +2074,23 @@ static_assert(sanity_arr_3[0] > 0 && sanity_arr_3[1] > 0 && sanity_arr_3[2] > 0
 #endif
 
 /**
+ * Photo G-code requirements
+ */
+#if ENABLED(PHOTO_GCODE)
+  #if (PIN_EXISTS(CHDK) + PIN_EXISTS(PHOTOGRAPH_PIN) + defined(PHOTO_SWITCH_POSITION)) > 1
+    #error "Please define only one of CHDK_PIN, PHOTOGRAPH_PIN, or PHOTO_SWITCH_POSITION."
+  #elif defined(PHOTO_SWITCH_POSITION) && !defined(PHOTO_POSITION)
+    #error "PHOTO_SWITCH_POSITION requires PHOTO_POSITION. Please update your Configuration_adv.h."
+  #elif PIN_EXISTS(CHDK) && defined(CHDK_DELAY)
+    #error "CHDK_DELAY has been replaced by PHOTO_SWITCH_MS. Please update your Configuration_adv.h."
+  #elif PIN_EXISTS(CHDK) && !defined(PHOTO_SWITCH_MS)
+    #error "PHOTO_SWITCH_MS is required with CHDK_PIN. Please update your Configuration_adv.h."
+  #elif defined(PHOTO_RETRACT_MM)
+    static_assert(PHOTO_RETRACT_MM + 0 >= 0, "PHOTO_RETRACT_MM must be >= 0.");
+  #endif
+#endif
+
+/**
  * Prusa MMU2 requirements
  */
 #if ENABLED(PRUSA_MMU2)
@@ -2083,5 +2100,18 @@ static_assert(sanity_arr_3[0] > 0 && sanity_arr_3[1] > 0 && sanity_arr_3[2] > 0
     #error "PRUSA_MMU2 requires EXTRUDERS = 5."
   #elif DISABLED(ADVANCED_PAUSE_FEATURE)
     static_assert(NULL == strstr(MMU2_FILAMENT_RUNOUT_SCRIPT, "M600"), "ADVANCED_PAUSE_FEATURE is required to use M600 with PRUSA_MMU2.");
+  #endif
+#endif
+
+/**
+ * Advanced PRINTCOUNTER settings
+ */
+#if ENABLED(PRINTCOUNTER)
+  #if defined(SERVICE_INTERVAL_1) != defined(SERVICE_NAME_1)
+    #error "Both SERVICE_NAME_1 and SERVICE_INTERVAL_1 are required."
+  #elif defined(SERVICE_INTERVAL_2) != defined(SERVICE_NAME_2)
+    #error "Both SERVICE_NAME_2 and SERVICE_INTERVAL_2 are required."
+  #elif defined(SERVICE_INTERVAL_3) != defined(SERVICE_NAME_3)
+    #error "Both SERVICE_NAME_3 and SERVICE_INTERVAL_3 are required."
   #endif
 #endif

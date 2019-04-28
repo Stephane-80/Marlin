@@ -20,9 +20,10 @@ env:
   - TEST_PLATFORM="DUE"
   - TEST_PLATFORM="LPC1768"
   - TEST_PLATFORM="LPC1769"
-  - TEST_PLATFORM="STM32F1"
+  #- TEST_PLATFORM="STM32F1"
   - TEST_PLATFORM="teensy35"
   - TEST_PLATFORM="linux_native"
+  - TEST_PLATFORM="esp32"
 
 addons:
   apt:

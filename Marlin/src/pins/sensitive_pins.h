@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@
 // Mixing stepper, Switching stepper, or regular stepper
 #define E_NEEDED(N) (ENABLED(MIXING_EXTRUDER) && MIXING_STEPPERS > N) \
                  || (ENABLED(SWITCHING_EXTRUDER) && E_STEPPERS > N) \
-                 || (DISABLED(SWITCHING_EXTRUDER, MIXING_EXTRUDER) && EXTRUDERS > N)
+                 || (NONE(SWITCHING_EXTRUDER, MIXING_EXTRUDER) && EXTRUDERS > N)
 
 #define _E0_CS
 #define _E0_MS1
@@ -360,7 +360,11 @@
   #endif // HOTENDS > 1
 #endif // HOTENDS
 
-#define _BED_PINS HEATER_BED_PIN, analogInputToDigitalPin(TEMP_BED_PIN),
+#define _BED_PINS
+#if PIN_EXISTS(HEATER_BED) && PIN_EXISTS(TEMP_BED)
+  #undef _BED_PINS
+  #define _BED_PINS HEATER_BED_PIN, analogInputToDigitalPin(TEMP_BED_PIN),
+#endif
 
 //
 // Dual X, Dual Y, Multi-Z

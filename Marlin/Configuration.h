@@ -73,9 +73,9 @@
 // Author info of this build printed to the host during boot and M115
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 #define SHOW_BOOTSCREEN
-#define STRING_SPLASH_LINE1 SHORT_BUILD_VERSION // will be shown during bootup in line 1
+//#define STRING_SPLASH_LINE1 SHORT_BUILD_VERSION // will be shown during bootup in line 1
 //#define STRING_SPLASH_LINE2 WEBSITE_URL         // will be shown during bootup in line 2
-#define STRING_SPLASH_LINE2 __DATE__ " " __TIME__ // build date and time --- WEBSITE_URL         // will be shown during bootup in line 2
+//#define STRING_SPLASH_LINE2 __DATE__ " " __TIME__ // build date and time --- WEBSITE_URL         // will be shown during bootup in line 2
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 /**
  * *** VENDORS PLEASE READ ***
@@ -323,24 +323,25 @@
  * Enable and connect the power supply to the PS_ON_PIN.
  * Specify whether the power supply is active HIGH or active LOW.
  */
-#define POWER_SUPPLY 1
-//#define PSU_CONTROL
+#define PSU_CONTROL
 //#define PSU_NAME "Power Supply"
-#if POWER_SUPPLY > 0
-  // Enable this option to leave the PSU off at startup.
-  // Power to steppers and heaters will need to be turned on with M80.
-  #define PS_DEFAULT_OFF
-  //#define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
+
+#if ENABLED(PSU_CONTROL)
+  #define PSU_ACTIVE_HIGH false     // Set 'false' for ATX, 'true' for X-Box
+
+  #define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
   //#define PSU_POWERUP_DELAY 100   // (ms) Delay for the PSU to warm up to full power
 
-  #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin  #if ENABLED(AUTO_POWER_CONTROL)
-    #define AUTO_POWER_FANS           // Turn on PSU if fans need power
+  //#define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
+  #if ENABLED(AUTO_POWER_CONTROL)
+    #define AUTO_POWER_FANS         // Turn on PSU if fans need power
     #define AUTO_POWER_E_FANS
     #define AUTO_POWER_CONTROLLERFAN
     #define AUTO_POWER_CHAMBER_FAN
     //#define AUTO_POWER_E_TEMP        50 // (°C) Turn on PSU over this temperature
     //#define AUTO_POWER_CHAMBER_TEMP  30 // (°C) Turn on PSU over this temperature
-    #define POWER_TIMEOUT 600  #endif
+    #define POWER_TIMEOUT 600
+  #endif
 #endif
 
 // @section temperature
@@ -879,8 +880,7 @@
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
 #define BLTOUCH
-#if ENABLED(BLTOUCH)
-  #define BLTOUCH_DELAY 20   // (ms) Enable and increase if needed
+
 /**
  * Touch-MI Probe by hotends.fr
  *
@@ -936,7 +936,8 @@
  *
  * Specify a Probe position as { X, Y, Z }
  */
-#define NOZZLE_TO_PROBE_OFFSET { -41, -10, -2.0 }
+//#define NOZZLE_TO_PROBE_OFFSET { -41, -10, -2.0 }
+#define NOZZLE_TO_PROBE_OFFSET { 10, 10, 0 }
 
 
 // Certain types of probes need to stay away from edges
@@ -982,7 +983,7 @@
 #define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 //#define Z_AFTER_PROBING           5 // Z position after probing is done
 
-#define Z_PROBE_LOW_POINT          -1 // Farthest distance below the trigger-point to go before stopping
+#define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
 #define Z_PROBE_OFFSET_RANGE_MIN -20
@@ -1231,10 +1232,10 @@
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Set the boundaries for probing (where the probe can reach).
-  #define LEFT_PROBE_BED_POSITION MIN_PROBE_EDGE
-  #define RIGHT_PROBE_BED_POSITION (X_BED_SIZE +X_PROBE_OFFSET_FROM_EXTRUDER) //#define RIGHT_PROBE_BED_POSITION (X_BED_SIZE - MIN_PROBE_EDGE+X_PROBE_OFFSET_FROM_EXTRUDER)
-  #define FRONT_PROBE_BED_POSITION MIN_PROBE_EDGE
-  #define BACK_PROBE_BED_POSITION (Y_BED_SIZE - MIN_PROBE_EDGE+Y_PROBE_OFFSET_FROM_EXTRUDER)
+  /*#define MIN_PROBE_EDGE_LEFT MIN_PROBE_EDGE
+  #define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE +NOZZLE_TO_PROBE_OFFSET[0]) //#define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE - MIN_PROBE_EDGE+X_PROBE_OFFSET_FROM_EXTRUDER)
+  #define MIN_PROBE_EDGE_FRONT MIN_PROBE_EDGE
+  #define MIN_PROBE_EDGE_BACK (Y_BED_SIZE - MIN_PROBE_EDGE+NOZZLE_TO_PROBE_OFFSET[1])*/
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST
 

@@ -160,20 +160,11 @@
 #define ENET_TXD1          P1_01   // J12-12
 
 #ifndef SDCARD_CONNECTION
-  #define SDCARD_CONNECTION ONBOARD
+  //#define SDCARD_CONNECTION ONBOARD
+  #define SDCARD_CONNECTION CUSTOM_CABLE
 #endif
 
 #define ONBOARD_SD_CS_PIN  P0_06   // Chip select for "System" SD card
-
-
-
-
-
-
-
-
-
-
 
 #if SD_CONNECTION_IS(CUSTOM_CABLE)
 

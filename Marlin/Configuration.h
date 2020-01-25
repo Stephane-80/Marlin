@@ -332,7 +332,7 @@
   #define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
   //#define PSU_POWERUP_DELAY 100   // (ms) Delay for the PSU to warm up to full power
 
-  //#define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
+  #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
   #if ENABLED(AUTO_POWER_CONTROL)
     #define AUTO_POWER_FANS         // Turn on PSU if fans need power
     #define AUTO_POWER_E_FANS
@@ -936,9 +936,7 @@
  *
  * Specify a Probe position as { X, Y, Z }
  */
-//#define NOZZLE_TO_PROBE_OFFSET { -41, -10, -2.0 }
-#define NOZZLE_TO_PROBE_OFFSET { 10, 10, 0 }
-
+#define NOZZLE_TO_PROBE_OFFSET { -41, -10, -2.0 }
 
 // Certain types of probes need to stay away from edges
 #define MIN_PROBE_EDGE 20
@@ -1232,10 +1230,10 @@
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Set the boundaries for probing (where the probe can reach).
-  /*#define MIN_PROBE_EDGE_LEFT MIN_PROBE_EDGE
-  #define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE +NOZZLE_TO_PROBE_OFFSET[0]) //#define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE - MIN_PROBE_EDGE+X_PROBE_OFFSET_FROM_EXTRUDER)
-  #define MIN_PROBE_EDGE_FRONT MIN_PROBE_EDGE
-  #define MIN_PROBE_EDGE_BACK (Y_BED_SIZE - MIN_PROBE_EDGE+NOZZLE_TO_PROBE_OFFSET[1])*/
+  //#define MIN_PROBE_EDGE_LEFT MIN_PROBE_EDGE
+  //#define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE +NOZZLE_TO_PROBE_OFFSET[0]) //#define MIN_PROBE_EDGE_RIGHT (X_BED_SIZE - MIN_PROBE_EDGE+X_PROBE_OFFSET_FROM_EXTRUDER)
+  //#define MIN_PROBE_EDGE_FRONT MIN_PROBE_EDGE
+  //#define MIN_PROBE_EDGE_BACK (Y_BED_SIZE - MIN_PROBE_EDGE+NOZZLE_TO_PROBE_OFFSET[1])
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST
 

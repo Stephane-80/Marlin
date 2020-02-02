@@ -28,7 +28,7 @@
 /**
  * Marlin release version identifier
  */
-//#define SHORT_BUILD_VERSION "2.0.2"
+#define SHORT_BUILD_VERSION "2.0.3"
 
 /**
  * Verbose version identifier which should contain a reference to the location
@@ -41,12 +41,12 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-//#define STRING_DISTRIBUTION_DATE "2020-01-27"
+#define STRING_DISTRIBUTION_DATE __DATE__ " " __TIME__ // build date and time
 
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
  */
-//#define MACHINE_NAME "3D Printer"
+#define MACHINE_NAME "CR-10S"
 
 /**
  * The SOURCE_CODE_URL is the location where users will find the Marlin Source

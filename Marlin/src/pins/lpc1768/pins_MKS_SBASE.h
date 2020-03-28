@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -36,6 +36,14 @@
 #endif
 #ifndef BOARD_WEBSITE_URL
   #define BOARD_WEBSITE_URL "github.com/makerbase-mks/MKS-SBASE"
+#endif
+
+//
+// EEPROM
+//
+#if NONE(FLASH_EEPROM_EMULATION, SDCARD_EEPROM_EMULATION)
+  #define FLASH_EEPROM_EMULATION
+  //#define SDCARD_EEPROM_EMULATION
 #endif
 
 #define LED_PIN            P1_18   // Used as a status indicator
@@ -198,7 +206,7 @@
   #define MOSI_PIN         P0_09
   #define SS_PIN           P0_28
 #elif SD_CONNECTION_IS(ONBOARD)
-    #define SD_DETECT_PIN  P0_27
+  #define SD_DETECT_PIN                    P0_27
   #define SCK_PIN          P0_07
   #define MISO_PIN         P0_08
   #define MOSI_PIN         P0_09
@@ -306,7 +314,7 @@
  #endif
 #endif
 
-#if MB(MKS_SBASE) && HAS_TMC220x
+#if MB(MKS_SBASE) && HAS_TMC_UART
 
   /**
    * TMC2208/TMC2209 stepper drivers
